@@ -1,4 +1,5 @@
 import os
+from typing import NewType
 from PIL import Image, ImageFont, ImageDraw
 
 class Features :
@@ -39,6 +40,12 @@ class Features :
         self.font = os.path.join(self.fontsDirectory, choice + ".ttf")
 
 class Generate :
+    wrapAt = 18 # the character limit per line
+    fontSize = 40
+    drawPos = (180, 15) # the pixels on the image to start drawing the text at
+    textColor = (255, 255, 255) # the color of the text
+    maxBoxSize = 60 # the max characters that can be fit into a box, need to know so we can seperate them
+
     def __init__(self, features) :
         if features.font == None or features.background == None :
             raise ValueError("Either font or background is not set on features")
@@ -46,23 +53,37 @@ class Generate :
         self.features = features
 
     def make(self, text, outputPath) :
+        text = wrapText(text, self.wrapAt)
         img = Image.open(self.features.background)
         draw = ImageDraw.Draw(img)
-        # font = ImageFont.truetype(<font-file>, <font-size>)
-        font = ImageFont.truetype(self.features.font, 32)
-        # draw.text((x, y),"Sample Text",(r,g,b))
-        draw.text((180, 15),text,(255,255,255),font=font)
+        font = ImageFont.truetype(self.features.font, self.fontSize)
+        draw.text(self.drawPos, text, self.textColor, font=font)
         img.save(outputPath)
 
     def bulkMake(self, lines, outputFolder) :
+        if isinstance(lines, str) :
+            splitLines = wrapText(lines, self.maxBoxSize)
+            lines = splitLines.split("\n")
+            # its a dirty reuse, but it works
         boxNumber = 1
         for each in lines :
-            print(each)
             self.make(each, os.path.join(outputFolder, str(boxNumber) + ".png"))
             boxNumber += 1
 
-def wrapFunction(text, length) :
+def wrapText(text, length) :
     # If you pass text to the function which is to long it will break the function,
     # this function allows you to check if the text is too long and put new lines 
     # in between each line
-    pass # yeah do this, i just dont want vs code to whine
+    splitText = text.split(" ")
+    wrappedLines = [""]
+    lineNumber = 0
+    while len(splitText) > 0 :
+        word = splitText.pop(0) # remove the word from the text and add it to the list
+        wrappedLines[lineNumber] += word + " "
+        if len(wrappedLines[lineNumber]) > length : # if the line is too long, remove the last word
+            wrappedLines[lineNumber] = wrappedLines[lineNumber][0:len(wrappedLines[lineNumber])-len(word)-1]
+            lineNumber += 1
+            wrappedLines.append(word + " ")
+    
+    newText = ("\n".join(wrappedLines))
+    return newText
