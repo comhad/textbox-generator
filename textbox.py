@@ -1,4 +1,5 @@
 import os
+import inspect
 from typing import NewType
 from PIL import Image, ImageFont, ImageDraw
 
@@ -7,7 +8,10 @@ class Features :
     background = None
 
     def __init__(self) :
-        self.pwd = os.getcwd()
+        pwd = inspect.getfile(self.__class__) # this gets the full file path
+        path = pwd.split("/") # assume linux
+        path.pop() # remove file name
+        self.pwd = "/".join(path) # this is just the folder path
         self.backgroundsDirectory = os.path.join(self.pwd, "assets/backgrounds")
         self.fontsDirectory = os.path.join(self.pwd, "assets/fonts")
 
@@ -61,7 +65,7 @@ class Generate :
         img.save(outputPath)
 
     def bulkMake(self, lines, outputFolder) :
-        if isinstance(lines, str) :
+        if isinstance(lines, str) : # if the argument is a string we want to split it (if we need to)
             splitLines = wrapText(lines, self.maxBoxSize)
             lines = splitLines.split("\n")
             # its a dirty reuse, but it works
