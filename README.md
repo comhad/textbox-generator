@@ -12,3 +12,6 @@ All backgrounds stored in the `backgrounds` folder should be png files that are 
 
 ## `fonts`
 All fonts stored in the `fonts` folder should be `ttf` files.
+
+# Extras
+Avatars should be a square to main their aspect ratio when they are put in textboxes.

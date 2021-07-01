@@ -19,12 +19,14 @@ testLines = [
 longLine = "This is a very long line that the code will have to split into multiple textboxes to make it work and fit all the text in"
 
 outputFolder = "/tmp/"
+avatar = "/tmp/sans.png"
 
 for background in backgrounds :
     for font in fonts :
         print("background : " + background + "\nfont : " + font)
         features.setBackground(background)
         features.setFont(font)
+        features.setAvatar(avatar)
         generator = textbox.Generate(features)
         generator.bulkMake(testLines, outputFolder)
         input("Array generating done, check " + outputFolder)

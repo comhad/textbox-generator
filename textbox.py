@@ -38,7 +38,9 @@ class Features :
         
         self.background = os.path.join(self.backgroundsDirectory, choice + ".png")
 
-    def setAvatar(self, choice) :
+    def setAvatar(self, choice) : # this is the file path
+        if not os.path.isfile(choice) :
+            raise FileNotFoundError("That avatar could not be found")
         self.avatar = choice
 
     def setFont(self, choice) :
