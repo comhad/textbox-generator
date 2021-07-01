@@ -6,6 +6,7 @@ from PIL import Image, ImageFont, ImageDraw
 class Features :
     font = None
     background = None
+    avatar = None
 
     def __init__(self) :
         pwd = inspect.getfile(self.__class__) # this gets the full file path
@@ -37,6 +38,9 @@ class Features :
         
         self.background = os.path.join(self.backgroundsDirectory, choice + ".png")
 
+    def setAvatar(self, choice) :
+        self.avatar = choice
+
     def setFont(self, choice) :
         if choice not in self.listFonts() :
             raise NameError("Font does not exist")
@@ -49,6 +53,8 @@ class Generate :
     drawPos = (180, 15) # the pixels on the image to start drawing the text at
     textColor = (255, 255, 255) # the color of the text
     maxBoxSize = 60 # the max characters that can be fit into a box, need to know so we can seperate them
+    avatarAt = (15, 5) # the pos to draw the avatar at
+    avatarSize = (130, 130) # avatar size in x and y
 
     def __init__(self, features) :
         if features.font == None or features.background == None :
@@ -59,6 +65,10 @@ class Generate :
     def make(self, text, outputPath) :
         text = wrapText(text, self.wrapAt)
         img = Image.open(self.features.background)
+        if self.features.avatar :
+            avatar = Image.open(self.features.avatar)
+            avatar = avatar.resize(self.avatarSize)
+            img.paste(avatar, self.avatarAt)
         draw = ImageDraw.Draw(img)
         font = ImageFont.truetype(self.features.font, self.fontSize)
         draw.text(self.drawPos, text, self.textColor, font=font)
