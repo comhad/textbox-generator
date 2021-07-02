@@ -51,9 +51,9 @@ class Features :
         self.font = os.path.join(self.fontsDirectory, choice + ".ttf")
 
 class Generate :
-    wrapAt = 18 # the character limit per line
-    fontSize = 40
-    drawPos = (180, 15) # the pixels on the image to start drawing the text at
+    wrapAt = 22 # the character limit per line
+    fontSize = 32
+    drawPos = (180, 20) # the pixels on the image to start drawing the text at
     textColor = (255, 255, 255) # the color of the text
     maxBoxSize = 60 # the max characters that can be fit into a box, need to know so we can seperate them
     avatarAt = (15, 5) # the pos to draw the avatar at
@@ -66,6 +66,7 @@ class Generate :
         self.features = features
 
     def make(self, text, outputPath) :
+        text = "* " + text
         text = wrapText(text, self.wrapAt)
         img = Image.open(self.features.background)
         if self.features.avatar :
@@ -74,10 +75,11 @@ class Generate :
             img.paste(avatar, self.avatarAt)
         draw = ImageDraw.Draw(img)
         font = ImageFont.truetype(self.features.font, self.fontSize)
-        draw.text(self.drawPos, text, self.textColor, font=font)
+        draw.text(self.drawPos, text, self.textColor, font=font, spacing=22)
         img.save(outputPath)
 
     def bulkMake(self, lines, outputFolder) :
+        filesMade = []
         if isinstance(lines, str) : # if the argument is a string we want to split it (if we need to)
             splitLines = wrapText(lines, self.maxBoxSize)
             lines = splitLines.split("\n")
@@ -85,7 +87,9 @@ class Generate :
         boxNumber = 1
         for each in lines :
             self.make(each, os.path.join(outputFolder, str(boxNumber) + ".png"))
+            filesMade.append(str(os.path.join(outputFolder, str(boxNumber) + ".png")))
             boxNumber += 1
+        return filesMade
 
 def wrapText(text, length) :
     # If you pass text to the function which is to long it will break the function,
