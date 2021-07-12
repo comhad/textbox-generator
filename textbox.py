@@ -7,6 +7,7 @@ class Features :
     font = None
     background = None
     avatar = None
+    color = None
 
     def __init__(self) :
         pwd = inspect.getfile(self.__class__) # this gets the full file path
@@ -50,6 +51,12 @@ class Features :
         
         self.font = os.path.join(self.fontsDirectory, choice + ".ttf")
 
+    def setColor(self, choice) :
+        if isinstance(choice, tuple) and len(choice) != 3 :
+            raise ValueError("That is not a tuple of 3")
+
+        self.color = choice
+
 class Generate :
     wrapAt = 22 # the character limit per line
     fontSize = 32
@@ -75,7 +82,7 @@ class Generate :
             img.paste(avatar, self.avatarAt)
         draw = ImageDraw.Draw(img)
         font = ImageFont.truetype(self.features.font, self.fontSize)
-        draw.text(self.drawPos, text, self.textColor, font=font, spacing=22)
+        draw.text(self.drawPos, text, self.features.color or self.textColor, font=font, spacing=22)
         img.save(outputPath)
 
     def bulkMake(self, lines, outputFolder) :
